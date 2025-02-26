@@ -1,4 +1,4 @@
-from Evaluator import EvaluationModel
+from Evaluator import EvaluationModel, MetricOutput
 import torch
 
 class Minicheck(EvaluationModel):
@@ -7,14 +7,20 @@ class Minicheck(EvaluationModel):
     def __init__(self, model_name="Bespoke-MiniCheck-7B"):
         from minicheck.minicheck import MiniCheck
         self.scorer = MiniCheck(model_name=model_name)
+        self.judge_model = "Minicheck_" + model_name
 
-    def predict_one(self, claim: str, context: str):
-        pred_label, raw_prob, _, _ = scorer.score(docs=[context], claims=[claim]) 
-        return raw_prob[0]
+    def predict_one(self, claim: str, context: str) -> MetricOutput:
+        pred_label, raw_prob, _, _ = self.scorer.score(docs=[context], claims=[claim]) 
+        return MetricOutput(**{
+            "claim": claim,
+            "context": context,
+            "judge_model": self.judge_model,
+            "score": raw_prob[0]
+        })
 
 if __name__ == '__main__':
     model = Minicheck()
     claim = "The sky is blue."
     context = "The sky is blue because of the way the Earth's atmosphere scatters sunlight."
-    score = model.predict_one(claim, context)
-    print(score)
+    judge = model.predict_one(claim, context)
+    print(judge)
