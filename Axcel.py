@@ -1,4 +1,4 @@
-from Evaluator import EvaluationModel
+from Evaluator import EvaluationModel, MetricOutput
 from tenacity import retry, stop_after_attempt, wait_fixed
 from openai import OpenAI
 from joblib import Memory
@@ -84,18 +84,25 @@ class AXCEL(EvaluationModel):
     """
     def __init__(self, model_path="anthropic/claude-3.5-sonnet"):
         self.model = model_path
+        self.judge_model = "AXCEL_" + model_path
         
-    def predict_one(self, claim: str, context: str, debug=False):
+    def predict_one(self, claim: str, context: str, debug=False) -> MetricOutput:
         llm_return = axcel_predict_one(claim, context)
         if debug:
             print(llm_return)
         score = parse_output(llm_return)
-        return score
+        return MetricOutput(**{
+            "claim": claim,
+            "context": context,
+            "score": score / 5,
+            "judge_model": self.judge_model,
+            "extra_output": llm_return
+        })
 
 if __name__ == '__main__':
     # memory.clear()
     model = AXCEL()
     claim = "Chenyu has 10 followers on Twitter."
     context = "Chenyu only had 5 followers on Twitter before, but now his followers have doubled."
-    score = model.predict_one(claim, context, debug=True)
-    print(score)
+    output = model.predict_one(claim, context, debug=False)
+    print(output)
