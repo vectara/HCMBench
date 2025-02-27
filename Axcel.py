@@ -83,8 +83,8 @@ class AXCEL(EvaluationModel):
     """AXCEL LLM-as-judge for evaluating generated output.
     """
     def __init__(self, model_path="anthropic/claude-3.5-sonnet"):
+        super().__init__(model_name="AXCEL_" + model_path)
         self.model = model_path
-        self.judge_model = "AXCEL_" + model_path
         
     def predict_one(self, claim: str, context: str, debug=False) -> MetricOutput:
         llm_return = axcel_predict_one(claim, context)
@@ -95,7 +95,7 @@ class AXCEL(EvaluationModel):
             "claim": claim,
             "context": context,
             "score": score / 5,
-            "judge_model": self.judge_model,
+            "judge_model": self.model_name,
             "extra_output": llm_return
         })
 
