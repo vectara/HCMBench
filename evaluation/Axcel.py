@@ -1,4 +1,4 @@
-from Evaluator import EvaluationModel, MetricOutput
+from .Evaluator import EvaluationModel, MetricOutput
 from tenacity import retry, stop_after_attempt, wait_fixed
 from openai import OpenAI
 from joblib import Memory
