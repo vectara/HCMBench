@@ -5,16 +5,16 @@ class Minicheck(EvaluationModel):
     """Minicheck model for evaluating generated output.
     """
     def __init__(self, model_name="Bespoke-MiniCheck-7B"):
+        super().__init__(model_name = "Minicheck_" + model_name)
         from minicheck.minicheck import MiniCheck
         self.scorer = MiniCheck(model_name=model_name)
-        self.judge_model = "Minicheck_" + model_name
 
     def predict_one(self, claim: str, context: str) -> MetricOutput:
         pred_label, raw_prob, _, _ = self.scorer.score(docs=[context], claims=[claim]) 
         return MetricOutput(**{
             "claim": claim,
             "context": context,
-            "judge_model": self.judge_model,
+            "judge_model": self.model_name,
             "score": raw_prob[0]
         })
 
