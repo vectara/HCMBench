@@ -1,4 +1,4 @@
-from Evaluator import EvaluationModel, MetricOutput
+from .Evaluator import EvaluationModel, MetricOutput
 import torch
 
 class HHEM(EvaluationModel):
