@@ -1,0 +1,11 @@
+# Correction Section
+run_correction: False
+correction_model: IdenticalCorrectionModel
+correction_model_args: 
+
+# Evaluation Section
+run_eval: True
+eval_datasets:
+  - RAGTruth
+eval_metrics:
+  HHEM: 

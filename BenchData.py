@@ -8,7 +8,7 @@ def load_C2DD2C():
     c2d_d2c = concatenate_datasets([c2d_d2c["c2d"], c2d_d2c["d2c"]])
     return c2d_d2c
 
-def load_ragtruth(data_dir="RAGTruth/dataset", split="test"):
+def load_RAGTruth(data_dir="RAGTruth/dataset", split="test"):
     response = load_jsonl(os.path.join(data_dir, "response.jsonl"))
     if split is not None:
         response = [item for item in response if item["split"] == split]
