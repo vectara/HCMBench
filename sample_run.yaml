@@ -4,6 +4,10 @@ correction_model: IdenticalCorrectionModel
 correction_model_args: 
 
 # Evaluation Section
+# Add metrics as:
+# - METRIC_CLASS1:
+# - METRIC_CLASS2:
+#     METRIC2_KWARGS (Optional)
 run_eval: True
 eval_datasets:
   - RAGTruth
