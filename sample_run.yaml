@@ -1,5 +1,5 @@
 # Correction Section
-run_correction: False
+run_correction: True
 correction_model: IdenticalCorrectionModel
 correction_model_args: 
 
@@ -8,4 +8,6 @@ run_eval: True
 eval_datasets:
   - RAGTruth
 eval_metrics:
-  HHEM: 
+  - HHEM:
+  - HHEM:
+      model_path: vectara/HHEM-2.2

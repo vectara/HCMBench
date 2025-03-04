@@ -5,7 +5,7 @@ class Minicheck(EvaluationModel):
     """Minicheck model for evaluating generated output.
     """
     def __init__(self, model_name="Bespoke-MiniCheck-7B"):
-        super().__init__(model_name = "Minicheck_" + model_name)
+        super().__init__(model_name = type(self).__name__ + '#' + model_name)
         from minicheck.minicheck import MiniCheck
         self.scorer = MiniCheck(model_name=model_name)
 

@@ -21,12 +21,15 @@ def main(eval_args):
     logger.setLevel(logging.INFO)
 
     HCMClass = getattr(correction, eval_args.correction_model)
-    HCM = HCMClass()
+    if eval_args.correction_model_args is not None:
+        hcm = HCMClass(**eval_args.correction_model_args)
+    else:
+        hcm = HCMClass()
     logger.info(f"HCM Model: {HCMClass}")
 
     for evalset in eval_args.eval_datasets:
         logger.info(f"Loading {evalset}")
         dataloader = getattr(BenchData, f"load_{evalset}")
         data = dataloader()
-        run_hcm(data, HCM, f"output/{eval_args.correction_model}/{evalset}/corrected.jsonl")
+        run_hcm(data, hcm, f"output/{eval_args.correction_model}/{evalset}/corrected.jsonl")
     

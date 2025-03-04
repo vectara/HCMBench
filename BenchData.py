@@ -43,7 +43,7 @@ def load_RAGTruth(data_dir="RAGTruth/dataset", split="test"):
     return data
 
 if __name__ == '__main__':
-    ragtruth = load_ragtruth()
+    ragtruth = load_RAGTruth()
     c2dd2c = load_C2DD2C()
     mix_data = concatenate_datasets([ragtruth, c2dd2c])
     print(mix_data)
