@@ -2,6 +2,8 @@
 """
 from pydantic import BaseModel
 from typing import Optional
+from datasets import Dataset
+from tqdm import tqdm
 
 class MetricOutput(BaseModel):
     claim: str
@@ -17,6 +19,22 @@ class EvaluationModel:
     def __init__(self, model_name):
         self.model_name = model_name
     
+    def predict_dataset(self, data, claim_column, context_column) -> Dataset:
+        """Predict a dataset
+           Default by for looping a dataset with predict_one
+           Can be used to implement batch prediction for speedup
+        """
+        outputs = []
+        for sample in tqdm(data):
+            output = self.predict_one(claim=sample[claim_column], 
+                context=sample[context_column])
+            outputs.append({**{
+                self.model_name: {
+                    "score": output.score,
+                    "extra_outut": output.extra_output
+                }
+            }, **sample})
+        return Dataset.from_list(outputs)
+
     def predict_one(self, claim: str, context: str) -> MetricOutput:
         raise NotImplementedError
-
