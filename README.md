@@ -16,7 +16,8 @@ python run.py sample_run.yaml
 3. [AXCEL](evaluation/Axcel.py) (Source: https://arxiv.org/abs/2409.16984)
 
 ## Dataset
- - RAGTruth
+ - [RAGTruth](https://github.com/ParticleMedia/RAGTruth), only summarization task
+ - [FAVA](https://huggingface.co/datasets/fava-uw/fava-data), 10% front data
 
 ## Add a new model / metric / dataset
 - **Add a new HCM:**

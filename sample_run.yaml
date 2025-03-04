@@ -10,7 +10,8 @@ correction_model_args:
 #     METRIC2_KWARGS (Optional)
 run_eval: True
 eval_datasets:
-  - RAGTruth
+  # - RAGTruth
+  - FAVA
 eval_metrics:
   - HHEM:
   - HHEM:
