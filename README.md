@@ -7,6 +7,9 @@ Run the correction model and hallucination detection metrics.
 python run.py sample_run.yaml
 ```
 
+## Result visualization
+See [``display_results.ipynb``](display_results.ipynb)
+
 ## Hallucination Correction Model (HCM)
 1. [IdenticalCorrectionModel](correction/CorrectionModel.py), returns the exact same text as the original input.
 

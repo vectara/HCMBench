@@ -6,7 +6,10 @@ from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 def run_metric(evalset, model, dump_to):
-    output_data = model.predict_dataset(evalset, "claim", "context")
+    if model.use_reference:
+        output_data = model.predict_dataset(evalset, "corrected", "claim")
+    else:
+        output_data = model.predict_dataset(evalset, "corrected", "context")
     output_data.to_json(dump_to, force_ascii=False)
 
 def main(eval_args, eval_metric:dict):

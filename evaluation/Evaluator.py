@@ -18,6 +18,9 @@ class EvaluationModel:
 
     def __init__(self, model_name):
         self.model_name = model_name
+        self.use_reference = False  
+        # use_reference indicates whether using original claim as context_column
+        # Used by similarity metrics, e.g., rouge
     
     def predict_dataset(self, data, claim_column, context_column) -> Dataset:
         """Predict a dataset
