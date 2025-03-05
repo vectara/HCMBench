@@ -46,8 +46,9 @@ if __name__ == '__main__':
             data = load_dataset('json', data_files=dump_to, split="train")
 
             metric_list = [column for column in data.column_names if column.partition('#')[0] in evaluation.__all__]
+            vote_metrics = [column for column in data.column_names if column.partition('#')[0] in evaluation.__vote__]
             logger.info(f"Metric list: {metric_list}")
-            data = data.map(postprocess_metrics, fn_kwargs={"metrics": metric_list})
+            data = data.map(postprocess_metrics, fn_kwargs={"metrics": vote_metrics})
             data.to_json(dump_to, force_ascii=False)
 
             agg_metrics = {}

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def run_hcm(evalset, model, dump_to):
     outputs = []
     for sample in tqdm(evalset):
-        output = model.correct_one(generated=sample["claim"], 
+        output = model.correct_one(claim=sample["claim"], 
             context=sample["context"])
         outputs.append({**output.model_dump(), **sample})
     dump_dataset = Dataset.from_list(outputs)

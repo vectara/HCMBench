@@ -4,7 +4,7 @@ import torch
 class HHEM(EvaluationModel):
     """HHEM model for evaluating generated output.
     """
-    def __init__(self, model_path="vectara/HHEM-2.1", device="cuda:0"):
+    def __init__(self, model_path="vectara/hallucination_evaluation_model", device="cuda:0"):
         super().__init__(model_name = type(self).__name__ + '#' + model_path)
         from transformers import AutoModelForTokenClassification, AutoTokenizer
         self.model = AutoModelForTokenClassification.from_pretrained(model_path)
@@ -13,8 +13,10 @@ class HHEM(EvaluationModel):
         self.model.to(device)
         if model_path == "vectara/HHEM-2.1":
             self.tokenizer = AutoTokenizer.from_pretrained("t5-base")
-        else:
+        elif model_path == 'vectara/HHEM-2.2':
             self.tokenizer = AutoTokenizer.from_pretrained("google/mt5-large")
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
         self.prompt = "<pad> Determine if the hypothesis is true given the premise?\n\nPremise: {text1}\n\nHypothesis: {text2}"
         
     def predict_one(self, claim: str, context: str) -> MetricOutput:

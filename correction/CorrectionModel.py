@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class CorrectionOutput(BaseModel):
-    generated: str
+    claim: str
     context: str
     corrected: str
     correct_model: str
@@ -21,11 +21,11 @@ class IdenticalCorrectionModel(CorrectionModel):
     def __init__(self, model_name='Identical'):
         super().__init__(model_name)
 
-    def correct_one(self, generated:str, context:str):
+    def correct_one(self, claim:str, context:str):
         return CorrectionOutput(
-            generated=generated,
+            claim=claim,
             context=context,
-            corrected=generated,
+            corrected=claim,
             correct_model=self.model_name
         )
 
