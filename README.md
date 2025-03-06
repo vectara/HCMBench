@@ -21,6 +21,7 @@ See [``display_results.ipynb``](display_results.ipynb)
 ## Dataset
  - [RAGTruth](https://github.com/ParticleMedia/RAGTruth), only summarization task
  - [FAVA](https://huggingface.co/datasets/fava-uw/fava-data), 10% front data
+ - [FaithBench](https://github.com/vectara/FaithBench), only "Unwanted" and "Consistent"
 
 ## Add a new model / metric / dataset
 - **Add a new HCM:**
