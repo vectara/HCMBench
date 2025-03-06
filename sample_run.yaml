@@ -11,8 +11,9 @@ correction_model_args:
 #     METRIC2_KWARGS (Optional)
 run_eval: True
 eval_datasets:
-  - RAGTruth
-  - FAVA
+  # - RAGTruth
+  # - FAVA
+  - FaithBench
 eval_metrics:
   - HHEM:
       model_path: vectara/HHEM-2.1

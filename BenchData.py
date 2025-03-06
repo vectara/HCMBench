@@ -55,10 +55,27 @@ def load_RAGTruth(data_dir="data/RAGTruth/dataset", split="test"):
     data = Dataset.from_list(data)
     return data
 
+def load_FaithBench(data_dir="data/FaithBench"):
+    data = load_dataset("csv", data_files=os.path.join(data_dir, 'FaithBench.csv'), split='train')
+    data = data.filter(lambda x: x['worst-label'] in ['Unwanted', 'Consistent'])
+    def convert_label(sample):
+        sample["label"] = 1 if sample["worst-label"] == 'Consistent' else 0
+        sample["extra_label"] = {
+            "best-label": sample["best-label"],
+            "worst-label": sample["worst-label"],
+        }
+        return sample
+    data = data.map(convert_label, remove_columns=['worst-label', 'best-label'])
+    data = data.rename_column('summary', 'claim')
+    data = data.rename_column('source', 'context')
+    data = data.rename_column('LLM', 'metadata')
+    return data
+
 if __name__ == '__main__':
     # ragtruth = load_RAGTruth()
     # c2dd2c = load_C2DD2C()
     # mix_data = concatenate_datasets([ragtruth, c2dd2c])
     # print(mix_data)
-    data = load_FAVA()
+    # data = load_FAVA()
+    faithbench = load_FaithBench()
     breakpoint()
