@@ -3,8 +3,8 @@ from .Evaluator import EvaluationModel, MetricOutput
 class Rouge(EvaluationModel):
     """Rouge score for evaluating the similarity before and after correctiom
     """
-    def __init__(self, variant='rougeL'):
-        super().__init__(model_name = type(self).__name__ + '#' + variant)
+    def __init__(self, variant='rougeL', **kwargs):
+        super().__init__(model_name = type(self).__name__ + '#' + variant, **kwargs)
         import evaluate
         self.variant = variant
         self.rouge = evaluate.load('rouge')

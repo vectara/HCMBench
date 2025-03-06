@@ -3,6 +3,7 @@ from configs import BenchmarkArguments, H4ArgumentParser
 import sys
 import run_correction
 import run_metrics
+import run_preprocess
 import multiprocessing
 from datasets import load_dataset
 import utils
@@ -32,6 +33,12 @@ if __name__ == '__main__':
         process = multiprocessing.Process(target=run_correction.main, args=(eval_args,))
         process.start()
         process.join()
+    
+    if eval_args.run_preprocess is not None:
+        for preprocess in eval_args.preprocessors:
+            process = multiprocessing.Process(target=run_preprocess.main, args=(eval_args, preprocess,))
+            process.start()
+            process.join()
 
     if eval_args.run_eval:
         for metric in eval_args.eval_metrics:

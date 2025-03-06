@@ -4,8 +4,8 @@ import torch
 class HHEM(EvaluationModel):
     """HHEM model for evaluating generated output.
     """
-    def __init__(self, model_path="vectara/hallucination_evaluation_model", device="cuda:0"):
-        super().__init__(model_name = type(self).__name__ + '#' + model_path)
+    def __init__(self, model_path="vectara/hallucination_evaluation_model", device="cuda:0", **kwargs):
+        super().__init__(model_name = type(self).__name__ + '#' + model_path, **kwargs)
         from transformers import AutoModelForTokenClassification, AutoTokenizer
         self.model = AutoModelForTokenClassification.from_pretrained(model_path)
         self.device = device

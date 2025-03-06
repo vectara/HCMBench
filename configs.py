@@ -97,6 +97,13 @@ class BenchmarkArguments:
         default=None,
         metadata={"help": "The arguments for correction model class."}
     )
+    run_preprocess: bool = field(
+        default=True,
+    )
+    preprocessors: Optional[List[Dict]] = field(
+        default=None,
+        metadata={"help": "List of preprocessor to run, e.g., Sentencizer."}
+    )
     run_eval: bool = field(
         default=True,
     )
