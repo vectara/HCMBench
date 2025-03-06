@@ -25,7 +25,7 @@ def main(eval_args, eval_metric:dict):
     logger.info(f"Metric: {eval_metric}")
 
     for evalset in eval_args.eval_datasets:
-        dump_to = f'output/{eval_args.correction_model}/{evalset}/corrected.jsonl'
+        dump_to = f'output/{eval_args.correction_model_args["model_name"]}/{evalset}/corrected.jsonl'
         logger.info(f"Loading {evalset}")
         data = load_dataset('json', data_files=dump_to, split="train")
         run_metric(data, metric, dump_to)

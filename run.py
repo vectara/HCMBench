@@ -41,12 +41,12 @@ if __name__ == '__main__':
 
         # Metrics aggregation
         for evalset in eval_args.eval_datasets:
-            dump_to = f'output/{eval_args.correction_model}/{evalset}/corrected.jsonl'
+            dump_to = f'output/{eval_args.correction_model_args["model_name"]}/{evalset}/corrected.jsonl'
             logger.info(f"Loading {evalset}")
             data = load_dataset('json', data_files=dump_to, split="train")
 
             metric_list = [column for column in data.column_names if column.partition('#')[0] in evaluation.__all__]
-            vote_metrics = [column for column in data.column_names if column.partition('#')[0] in evaluation.__vote__]
+            vote_metrics = [column for column in data.column_names if column.partition('#')[0] in evaluation.__factuality__]
             logger.info(f"Metric list: {metric_list}")
             data = data.map(postprocess_metrics, fn_kwargs={"metrics": vote_metrics})
             data.to_json(dump_to, force_ascii=False)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
             agg_metrics["avg_score"] = sum(data["avg_score"]) / len(data)
             agg_metrics["vote_score"] = sum(data["vote_score"]) / len(data)
 
-            utils.dump2jsonl([agg_metrics], f'output/{eval_args.correction_model}/{evalset}/score_summary.jsonl')
+            utils.dump2jsonl([agg_metrics], f'output/{eval_args.correction_model_args["model_name"]}/{evalset}/score_summary.jsonl')
             logger.info(f"Aggregated scores for {evalset}:")
             logger.info(agg_metrics)
     
