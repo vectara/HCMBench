@@ -1,4 +1,4 @@
-from .Evaluator import EvaluationModel, MetricOutput
+from .evaluator import EvaluationModel, MetricOutput
 
 class Rouge(EvaluationModel):
     """Rouge score for evaluating the similarity before and after correctiom

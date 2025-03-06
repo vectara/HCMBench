@@ -1,4 +1,4 @@
-from .Evaluator import EvaluationModel, MetricOutput
+from .evaluator import EvaluationModel, MetricOutput
 from tenacity import retry, stop_after_attempt, wait_fixed
 import time
 import os

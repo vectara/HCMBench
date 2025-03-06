@@ -1,16 +1,16 @@
 """ This file contains the Evaluator classes
 """
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Any
 from datasets import Dataset
 from tqdm import tqdm
 
 class MetricOutput(BaseModel):
-    claim: str
+    claim: str | List[str]
     context: str
     score: float
     judge_model: str
-    extra_output: Optional[str] = None
+    extra_output: Optional[Any] = None
 
 class EvaluationModel:
     """A class to evaluate generated output.

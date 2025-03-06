@@ -1,6 +1,6 @@
 # Sentence Decontextualization from MiniCheck: Efficient Fact-Checking of LLMs on Grounding Documents
 # https://aclanthology.org/2024.emnlp-main.499.pdf
-from .Preprocess import Preprocessor
+from .preprocess import Preprocessor
 from typing import List
 import json
 import spacy
