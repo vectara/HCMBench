@@ -1,9 +1,12 @@
 from .Evaluator import EvaluationModel, MetricOutput
 from tenacity import retry, stop_after_attempt, wait_fixed
-from openai import OpenAI
-from joblib import Memory
-location = './Axcel_cache'
-memory = Memory(location, verbose=0)
+import time
+import os
+import sys
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+from utils import get_LLM_response
 
 SYSTEM_PROMPT = """You are given two texts, a source text and derived text. Verify if the derived text is factually correct with respect to the source. Use the following step-by-step instructions to assess factual correctness of derived text.
  Step 1 - Extract all the facts from the derived text.
@@ -51,25 +54,6 @@ INPUT_TEMPLATE = """<Source Text>
 {derived_text}
 </Derived Text>"""
 
-@memory.cache
-@retry(wait=wait_fixed(2), stop=stop_after_attempt(3))
-def axcel_predict_one(claim: str, context: str):
-    client = OpenAI(base_url="https://openrouter.ai/api/v1")
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": EXAMPLE1_INPUT},
-        {"role": "assistant", "content": EXAMPLE1_OUTPUT},
-        {"role": "user", "content": INPUT_TEMPLATE.format(source_text=context, derived_text=claim)}
-    ]
-    completion = client.chat.completions.create(
-        model="anthropic/claude-3.5-sonnet",
-        messages=messages,
-        temperature=0.0,
-        frequency_penalty=1,
-        max_tokens=1000,
-    )   
-    return completion.choices[0].message.content
-
 def parse_output(output):
     lines = output.split('\n')
     scores = []
@@ -82,12 +66,30 @@ def parse_output(output):
 class AXCEL(EvaluationModel):
     """AXCEL LLM-as-judge for evaluating generated output.
     """
-    def __init__(self, model_path="anthropic/claude-3.5-sonnet"):
+    def __init__(self, model_path="anthropic/claude-3.5-sonnet", 
+        base_url="https://openrouter.ai/api/v1",
+        RPS=20):
         super().__init__(model_name=type(self).__name__ + '#' + model_path)
         self.model = model_path
+        self.base_url = base_url
+        self.RPS = RPS
         
     def predict_one(self, claim: str, context: str, debug=False) -> MetricOutput:
-        llm_return = axcel_predict_one(claim, context)
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": EXAMPLE1_INPUT},
+            {"role": "assistant", "content": EXAMPLE1_OUTPUT},
+            {"role": "user", "content": INPUT_TEMPLATE.format(source_text=context, derived_text=claim)}
+        ]
+        completion = get_LLM_response(
+            base_url = self.base_url, 
+            model = self.model, 
+            messages = messages,
+            temperature=0.0,
+            frequency_penalty=1,
+            max_tokens=1000)
+        time.sleep(1.0/self.RPS)
+        llm_return = completion.choices[0].message.content
         if debug:
             print(llm_return)
         score = parse_output(llm_return)
@@ -99,10 +101,12 @@ class AXCEL(EvaluationModel):
             "extra_output": llm_return
         })
 
-if __name__ == '__main__':
-    # memory.clear()
+def main():
     model = AXCEL()
     claim = "Chenyu has 10 followers on Twitter."
     context = "Chenyu only had 5 followers on Twitter before, but now his followers have doubled."
     output = model.predict_one(claim, context, debug=False)
     print(output)
+
+if __name__ == '__main__':
+    main()
