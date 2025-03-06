@@ -1,1 +1,1 @@
-from .CorrectionModel import IdenticalCorrectionModel
+from .correction_model import IdenticalCorrectionModel

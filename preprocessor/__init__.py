@@ -1,2 +1,2 @@
-from .ClaimExtraction import ClaimExtractor
-from .SentenceSplit import Sentencizer
+from .claim_extraction import ClaimExtractor
+from .sentence_split import Sentencizer
