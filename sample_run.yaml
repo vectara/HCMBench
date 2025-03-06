@@ -4,12 +4,18 @@ correction_model: IdenticalCorrectionModel
 correction_model_args: 
   model_name: Identical
 
+# Response Preprocessing section
+run_preprocess: True
+preprocessors:
+  - Sentencizer:
+      decontext: False
+
 # Evaluation Section
 # Add metrics as:
 # - METRIC_CLASS1:
 # - METRIC_CLASS2:
 #     METRIC2_KWARGS (Optional)
-run_eval: True
+run_eval: False
 eval_datasets:
   # - RAGTruth
   # - FAVA
@@ -18,3 +24,4 @@ eval_metrics:
   - HHEM:
       model_path: vectara/HHEM-2.1
   - Rouge:
+      context_column: claim
