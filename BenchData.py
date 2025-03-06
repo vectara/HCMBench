@@ -21,7 +21,7 @@ def load_FAVA(data_dir='fava-uw/fava-data'):
     data = data.map(process_fava, remove_columns =["prompt", "completion"])
     return data
 
-def load_RAGTruth(data_dir="RAGTruth/dataset", split="test"):
+def load_RAGTruth(data_dir="data/RAGTruth/dataset", split="test"):
     response = load_jsonl(os.path.join(data_dir, "response.jsonl"))
     if split is not None:
         response = [item for item in response if item["split"] == split]

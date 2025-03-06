@@ -2,6 +2,7 @@
 run_correction: True
 correction_model: IdenticalCorrectionModel
 correction_model_args: 
+  model_name: Identical
 
 # Evaluation Section
 # Add metrics as:
