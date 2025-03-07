@@ -15,13 +15,17 @@ preprocessors:
 # - METRIC_CLASS1:
 # - METRIC_CLASS2:
 #     METRIC2_KWARGS (Optional)
-run_eval: False
+run_eval: True
 eval_datasets:
-  # - RAGTruth
+  - RAGTruth
   # - FAVA
-  - FaithBench
+  # - FaithBench
 eval_metrics:
   - HHEM:
       model_path: vectara/HHEM-2.1
+  - HHEM:
+      model_path: vectara/HHEM-2.1
+      revision: -sent
+      claim_column: processed
   - Rouge:
       context_column: claim
