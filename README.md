@@ -13,6 +13,10 @@ See [``display_results.ipynb``](display_results.ipynb)
 ## Hallucination Correction Model (HCM)
 1. [IdenticalCorrectionModel](correction/CorrectionModel.py), returns the exact same text as the original input.
 
+## Preprocessor
+1. [ClaimExtractor](preprocess/claim_extraction.py), extract atomic facts from a text.
+2. [Sentencizer](preprocess/sentence_split.py), sentencize the text, with optional decontextualization with LLM.
+
 ## Hallucination Evaluation Metric (HEM)
 1. [HHEM](evaluation/HHEM.py) (Source: https://huggingface.co/vectara/hallucination_evaluation_model)
 2. [Minicheck](evaluation/Minicheck.py) (Source: https://huggingface.co/bespokelabs/Bespoke-MiniCheck-7B)
@@ -23,12 +27,15 @@ See [``display_results.ipynb``](display_results.ipynb)
  - [FAVA](https://huggingface.co/datasets/fava-uw/fava-data), 10% front data
  - [FaithBench](https://github.com/vectara/FaithBench), only "Unwanted" and "Consistent"
 
-## Add a new model / metric / dataset
+## Add a new model / preprocessor / metric / dataset
 - **Add a new HCM:**
-    - Implement your own model class which inherits from [CorrectionModel](correction/CorrectionModel.py)
+    - Implement your own model class which inherits from [CorrectionModel](correction/correction_model.py)
     - Add import code to ``correction/__init__.py``
+- **Add a new preprocessor:**
+    - Implement your own processor class which inherits from [Preproessor](preprocess/preprocessor.py)
+    - Add import code to ``preprocess/__init__.py``
 - **Add a new HEM:**
-    - Implement your own model class which inherits from [EvaluationModel](evaluation/Evaluator.py)
+    - Implement your own model class which inherits from [EvaluationModel](evaluation/evaluator.py)
     - Add import code to ``evaluation/__init__.py``
 - **Add a new dataset:**
     - Add a new funciton with name ``load_{data_name}`` in ``BenchData.py``

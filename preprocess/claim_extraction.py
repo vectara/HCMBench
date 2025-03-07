@@ -1,6 +1,6 @@
 # Claim Extraction from HalluMeasure: Fine-grained Hallucination Measurement Using Chain-of-Thought Reasoning
 # https://aclanthology.org/2024.emnlp-main.837.pdf
-from .preprocess import Preprocessor
+from .preprocessor import Preprocessor
 from typing import List
 import time
 import sys

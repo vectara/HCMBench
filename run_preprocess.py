@@ -1,7 +1,7 @@
 from datasets import load_dataset, Dataset
 import logging
 from configs import BenchmarkArguments, H4ArgumentParser
-import preprocessor
+import preprocess
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ def main(eval_args, processor:dict):
     logger.setLevel(logging.INFO)
 
     processor_class_name = list(processor.keys())[0]
-    ProcessorClass = getattr(preprocessor, processor_class_name)
+    ProcessorClass = getattr(preprocess, processor_class_name)
     if eval_args.correction_model_args is not None:
         processor = ProcessorClass(**processor[processor_class_name])
     else:
@@ -33,5 +33,5 @@ def main(eval_args, processor:dict):
         dump_to = f'output/{eval_args.correction_model_args["model_name"]}/{evalset}/corrected.jsonl'
         logger.info(f"Loading {evalset}")
         data = load_dataset('json', data_files=dump_to, split="train")
-        run_processor(data, processor, f"output/{eval_args.correction_model_args["model_name"]}/{evalset}/corrected.jsonl")
+        run_processor(data, processor, f"output/{eval_args.correction_model_args['model_name']}/{evalset}/corrected.jsonl")
     
