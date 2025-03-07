@@ -31,5 +31,5 @@ def main(eval_args):
         logger.info(f"Loading {evalset}")
         dataloader = getattr(BenchData, f"load_{evalset}")
         data = dataloader()
-        run_hcm(data, hcm, f"output/{eval_args.correction_model_args["model_name"]}/{evalset}/corrected.jsonl")
+        run_hcm(data, hcm, f"output/{eval_args.correction_model_args['model_name']}/{evalset}/corrected.jsonl")
     

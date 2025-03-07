@@ -18,8 +18,8 @@ preprocessors:
 run_eval: True
 eval_datasets:
   - RAGTruth
-  # - FAVA
-  # - FaithBench
+  - FAVA
+  - FaithBench
 eval_metrics:
   - HHEM:
       model_path: vectara/HHEM-2.1
