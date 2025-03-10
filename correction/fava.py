@@ -25,7 +25,7 @@ class FAVA(CorrectionModel):
 
     def correct_one(self, claim:str, context:str, debug=False):
         prompts = [self.prompt.format(evidence=context, output=claim)]
-        outputs = self.model.generate(prompts, self.sampling_params)
+        outputs = self.model.generate(prompts, self.sampling_params, use_tqdm=False)
         if debug:
             print(outputs[0].outputs[0].text)
         return CorrectionOutput(
