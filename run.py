@@ -34,7 +34,7 @@ if __name__ == '__main__':
         process.start()
         process.join()
     
-    if eval_args.run_preprocess is not None:
+    if eval_args.run_preprocess:
         for preprocess in eval_args.preprocessors:
             process = multiprocessing.Process(target=run_preprocess.main, args=(eval_args, preprocess,))
             process.start()

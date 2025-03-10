@@ -12,7 +12,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 from utils import get_LLM_response
 
-SYSTEM_PROMPT = """You are provided with a context and a claim. Please first determine if the claim can stand alone without the context. If not, provide a decontextualized version of the claim that incorporates necessary information from the context to make it self-contained. The revision should be as minimum as possible. Please respond with a JSON format: {"label": "yes"/"no", "decontext": "NA"/decontextualized claim}."""
+SYSTEM_PROMPT = """You are provided with a context and a claim. Please first determine if the claim can stand alone without the context. If not, provide a decontextualized version of the claim that incorporates necessary information from the context to make it self-contained. The revision should be as minimum as possible. You will always change double quotes to single quotes in the claim. For example, write 'glass' instead of "glass". Please respond with a JSON format: {"label": "yes"/"no", "decontext": "NA"/decontextualized claim}."""
 
 EXAMPLE1_INPUT = """Context: There are many reasons why poetry is important for children. Poetry can help children build confidence through memorizing and reciting poems. It can also provide an easy way for children to remember a lesson or value.
 
