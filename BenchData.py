@@ -9,7 +9,7 @@ def load_C2DD2C():
     return c2d_d2c
 
 def load_FAVA(data_dir='fava-uw/fava-data'):
-    data = load_dataset(data_dir, split='train[:10%]')
+    data = load_dataset(data_dir, split='train[:3%]')
     def process_fava(sample):
         context = sample["prompt"].partition("Read the following references:")[2].strip()
         context = context.rpartition("Please identify all the errors in the following passage using the references provided and suggest edits:\nText:")[0].strip()

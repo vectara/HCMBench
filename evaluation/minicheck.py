@@ -25,12 +25,12 @@ class Minicheck(EvaluationModel):
             "context": context,
             "judge_model": self.model_name,
             "score": min(raw_prob),
-            "extra_output": np.argmin(scores),
+            "extra_output": np.argmin(raw_prob),
         })
 
 def main():
     model = Minicheck()
-    claim = "The sky is blue."
+    claim = ["The sky is blue.", "Earth's atmosphere scatters moonlight."]
     context = "The sky is blue because of the way the Earth's atmosphere scatters sunlight."
     judge = model.predict_one(claim, context)
     print(judge)
