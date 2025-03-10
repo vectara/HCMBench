@@ -12,7 +12,7 @@ def run_hcm(evalset, model, dump_to):
     for sample in tqdm(evalset):
         output = model.correct_one(claim=sample["claim"], 
             context=sample["context"])
-        outputs.append({**output.model_dump(), **sample})
+        outputs.append({**sample, **output.model_dump()})
     dump_dataset = Dataset.from_list(outputs)
     dump_dataset.to_json(dump_to, force_ascii=False)
 

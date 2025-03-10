@@ -30,12 +30,12 @@ class EvaluationModel:
         for sample in tqdm(data):
             output = self.predict_one(claim=sample[self.claim_column], 
                 context=sample[self.context_column])
-            outputs.append({**{
+            outputs.append({**sample, **{
                 self.model_name: {
                     "score": output.score,
                     "extra_outut": output.extra_output
                 }
-            }, **sample})
+            }})
         return Dataset.from_list(outputs)
 
     def predict_one(self, claim: str, context: str) -> MetricOutput:

@@ -11,8 +11,8 @@ def run_processor(evalset, model, dump_to):
     for sample in tqdm(evalset):
         output = model.process_one(sample[model.input_column])
         outputs.append({
-            **{model.output_column: output}, 
-            **sample
+            **sample,
+            **{model.output_column: output}
         })
     dump_dataset = Dataset.from_list(outputs)
     dump_dataset.to_json(dump_to, force_ascii=False)

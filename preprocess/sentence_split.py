@@ -57,6 +57,7 @@ class Sentencizer(Preprocessor):
     def process_one(self, text:str) -> List[str]:
         doc = self.nlp(text)
         sents = [sent.text.strip() for sent in doc.sents]
+        if len(sents) == 0: sents = ['.']
         if self.decontext:
             decontext_sents = [sents[0]]
             for idx, sent in enumerate(sents[1:], start=1):
