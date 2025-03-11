@@ -1,11 +1,11 @@
 # Correction Section
-run_correction: True
+run_correction: False
 correction_model: IdenticalCorrectionModel
 correction_model_args: 
   model_name: Identical
 
 # Response Preprocessing section
-run_preprocess: True
+run_preprocess: False
 preprocessors:
   - Sentencizer:
       decontext: False
@@ -18,14 +18,19 @@ preprocessors:
 run_eval: True
 eval_datasets:
   - RAGTruth
-  - FAVA
+  # - FAVA
   - FaithBench
 eval_metrics:
-  - HHEM:
-      model_path: vectara/HHEM-2.1
-  - HHEM:
-      model_path: vectara/HHEM-2.1
+  # - HHEM:
+  #     model_path: vectara/HHEM-2.1
+  # - HHEM:
+  #     model_path: vectara/HHEM-2.1
+  #     revision: -sent
+  #     claim_column: processed
+  # - Rouge:
+  #     context_column: claim
+  - Minicheck:
+  - Minicheck:
       revision: -sent
       claim_column: processed
-  - Rouge:
-      context_column: claim
+      
