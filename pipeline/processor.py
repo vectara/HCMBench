@@ -1,0 +1,38 @@
+from datasets import load_dataset, concatenate_datasets, Dataset
+from pydantic import BaseModel
+from typing import Dict
+import time
+
+class ProcessorOutput(BaseModel):
+    pass
+
+class Processor:
+    """ Abstract class for a processor """
+    def __init__(self, num_proc=1, RPS=0, **kwargs):
+        self.num_proc = num_proc
+        self.RPS = 0
+        if len(kwargs) > 0:
+            print("Unused kwargs:", kwargs)
+
+    def process_one(self, sample: Dict) -> ProcessorOutput:
+        """ The main processing step happens here """
+        raise NotImplementedError
+    
+    def merge_output(self, sample: Dict , output: ProcessorOutput):
+        """ Merging output results back to the sample """
+        return {**sample, **output.model_dump()}
+    
+    def map_fn(self, sample):
+        """ Map function called with RPS handling """
+        output = self.process_one(sample)
+        if self.RPS != 0:
+           time.sleep(1/self.RPS * self.num_proc) 
+        return self.merge_output(sample, output)
+
+    def process_dataset(self, data: Dataset, num_proc=1):
+        """ Process a dataset with this processor, can be override for batch processing """
+        data = data.map(
+            self.map_fn,
+            num_proc=num_proc
+        )
+        return data

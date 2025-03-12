@@ -3,6 +3,13 @@ import vllm
 from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
+FAVA_PROMPT = \
+"""Read the following references:
+{evidence}
+Please identify all the errors in the following text using the information in the references provided and suggest edits if necessary:
+[Text] {output}
+[Edited] """
+
 def post_process(edited_text):
     soup = BeautifulSoup(edited_text, "html.parser")
     for tag in soup.findAll(["delete", "subjective", "unverifiable", "invented", "contradictory"]):
@@ -18,19 +25,16 @@ class FAVA(CorrectionModel):
         self.model = vllm.LLM(model="fava-uw/fava-model", **vllm_kwargs)
         self.sampling_params = vllm.SamplingParams(
             temperature=0,
-            top_p=1.0,
             max_tokens=1024,
         )
-        self.prompt = "Read the following references:\n{evidence}\nPlease identify all the errors in the following text using the information in the references provided and suggest edits if necessary:\n[Text] {output}\n[Edited] "
+        self.prompt = FAVA_PROMPT
 
-    def correct_one(self, claim:str, context:str, debug=False):
-        prompts = [self.prompt.format(evidence=context, output=claim)]
+    def process_one(self, sample: dict, debug=False) -> CorrectionOutput:
+        prompts = [self.prompt.format(evidence=sample["context"], output=sample["claim"])]
         outputs = self.model.generate(prompts, self.sampling_params, use_tqdm=False)
         if debug:
             print(outputs[0].outputs[0].text)
         return CorrectionOutput(
-            claim=claim,
-            context=context,
             corrected=post_process(outputs[0].outputs[0].text),
             correct_model=self.model_name
         )
@@ -39,4 +43,4 @@ def main():
     context = "Banff National Park is Canada's oldest national park, established in 1885 as Rocky Mountains Park. Located in Alberta's Rocky Mountains, 110–180 kilometres (68–112 mi) west of Calgary, Banff encompasses 6,641 square kilometres (2,564 sq mi) of mountainous terrain."
     claim = "Canada's oldest national park, Banff, was established in 1886. It recently won a Nature's Choice 2023 award for its beautiful mountainous terrain. It's the best national park ever."
     fava = FAVA()
-    print(fava.correct_one(claim, context, debug=True))
+    print(fava.process_one({"claim": claim, "context": context}, debug=True))
