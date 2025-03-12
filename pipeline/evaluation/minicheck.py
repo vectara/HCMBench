@@ -1,7 +1,5 @@
 from .evaluator import EvaluationModel, MetricOutput
-from typing import List
 from datasets import Dataset
-import torch
 import numpy as np
 
 class Minicheck(EvaluationModel):
@@ -12,7 +10,9 @@ class Minicheck(EvaluationModel):
         from minicheck.minicheck import MiniCheck
         self.scorer = MiniCheck(model_name=model_name)
 
-    def predict_one(self, claim: str | List[str], context: str) -> MetricOutput:
+    def process_one(self, sample: dict) -> MetricOutput:
+        claim = sample[self.claim_column]
+        context = sample[self.context_column]
         if isinstance(claim, str):
             claims = [claim]
             docs = [context]
@@ -21,18 +21,18 @@ class Minicheck(EvaluationModel):
             docs = [context] * len(claims)
         pred_label, raw_prob, _, _ = self.scorer.score(docs=docs, claims=claims) 
         return MetricOutput(**{
-            "claim": claim,
-            "context": context,
             "judge_model": self.model_name,
             "score": min(raw_prob),
             "extra_output": np.argmin(raw_prob),
         })
 
 def main():
-    model = Minicheck()
-    claim = ["The sky is blue.", "Earth's atmosphere scatters moonlight."]
-    context = "The sky is blue because of the way the Earth's atmosphere scatters sunlight."
-    judge = model.predict_one(claim, context)
+    model = Minicheck(claim_column='claim')
+    sample = dict(
+        claim = ["The sky is blue.", "Earth's atmosphere scatters moonlight."],
+        context = "The sky is blue because of the way the Earth's atmosphere scatters sunlight."
+    )
+    judge = model.process_one(sample)
     print(judge)
 
 if __name__ == '__main__':
