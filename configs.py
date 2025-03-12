@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, NewType, Optional, Tuple
 from transformers import HfArgumentParser
