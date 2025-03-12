@@ -4,13 +4,7 @@ from .preprocessor import Preprocessor
 from typing import List
 import json
 import spacy
-import time
-import sys
-import os
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-from utils import get_LLM_response
+from ..oai_utils import get_LLM_response
 
 SYSTEM_PROMPT = """You are provided with a context and a claim. Please first determine if the claim can stand alone without the context. If not, provide a decontextualized version of the claim that incorporates necessary information from the context to make it self-contained. The revision should be as minimum as possible. You will always change double quotes to single quotes in the claim. For example, write 'glass' instead of "glass". Please respond with a JSON format: {"label": "yes"/"no", "decontext": "NA"/decontextualized claim}."""
 
@@ -43,19 +37,17 @@ class Sentencizer(Preprocessor):
     def __init__(self, 
             model_path="anthropic/claude-3.5-sonnet", 
             base_url="https://openrouter.ai/api/v1",
-            RPS=20, 
             decontext=False,
             **kwargs
         ):
         super().__init__(**kwargs)
         self.model = model_path
         self.base_url = base_url
-        self.RPS = RPS
         self.nlp = spacy.load('en_core_web_sm')
         self.decontext = decontext
 
-    def process_one(self, text:str) -> List[str]:
-        doc = self.nlp(text)
+    def process_one(self, sample: dict) -> List[str]:
+        doc = self.nlp(sample[self.input_column])
         sents = [sent.text.strip() for sent in doc.sents]
         if len(sents) == 0: sents = ['.']
         if self.decontext:
@@ -87,9 +79,7 @@ class Sentencizer(Preprocessor):
             messages = messages,
             temperature = 0.0,
             max_tokens = 1000)
-        time.sleep(1.0/self.RPS)
         llm_return = completion.choices[0].message.content
-        print(llm_return)
         try:
             resp = json.loads(llm_return)
             if resp["label"] == "no":
@@ -98,8 +88,7 @@ class Sentencizer(Preprocessor):
             pass
         return claim
 
-if __name__ == '__main__':
-    sentencizer = Sentencizer(decontext=True)
+def main():
+    sentencizer = Sentencizer(decontext=True, input_column='input')
     text = """A wild card, unknown when the strike began, was Taylor Swift’s concert film. It certainly filled an October void that existed before the strike and its SAG-AFTRA waver meant she could promote it."""
-
-    print(sentencizer.process_one(text))
+    print(sentencizer.process_one({"input": text}))

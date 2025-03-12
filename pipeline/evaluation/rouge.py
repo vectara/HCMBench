@@ -8,20 +8,22 @@ class Rouge(EvaluationModel):
         import evaluate
         self.variant = variant
         self.rouge = evaluate.load('rouge')
-        self.use_reference = True
 
-    def predict_one(self, claim:str, context:str) -> MetricOutput:
+    def process_one(self, sample:dict) -> MetricOutput:
         """Rouge being a reference metric
            claim -> corrected_text
            context -> original_claim
         """
-        claim = claim.lower()
-        context = context.lower()
+        claim = sample[self.claim_column].lower()
+        context = sample[self.context_column].lower()
         results = self.rouge.compute(predictions=[claim],
                                 references=[[context]])
         return MetricOutput(**{
-            "claim": claim,
-            "context": context,
             "score": results[self.variant],
             "judge_model": self.model_name
         })
+    
+def main():
+    sample = {"corrected": "Hello world", "context": "Hello general"}
+    rouge = Rouge()
+    print(rouge.process_one(sample))
