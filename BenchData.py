@@ -68,8 +68,25 @@ def load_FaithBench(data_dir="data/FaithBench"):
     data = data.map(convert_label, remove_columns=['worst-label', 'best-label'])
     data = data.rename_column('summary', 'claim')
     data = data.rename_column('source', 'context')
-    data = data.rename_column('LLM', 'metadata')
+    data = data.rename_column('LLM', 'model')
     return data
+
+def load_FACTSGrounding(data_dir="data/FACTSGrounding"):
+    data = load_dataset("csv", data_files=os.path.join(data_dir, 'data.csv'), split='train')
+    response_columns = [column.partition('-response')[0] for column in data.column_names if column.endswith('-response')]
+    procssed = []
+    for sample in data:
+        for llm in response_columns:
+            procssed.append({
+                "claim": sample[f"{llm}-response"].strip(),
+                "context": sample['context_document'].strip(),
+                "model": llm,
+                "metadata": {
+                    "system_instruction": sample["system_instruction"],
+                    "user_request": sample["user_request"]
+                }
+            })
+    return Dataset.from_list(procssed)
 
 if __name__ == '__main__':
     # ragtruth = load_RAGTruth()
@@ -77,5 +94,6 @@ if __name__ == '__main__':
     # mix_data = concatenate_datasets([ragtruth, c2dd2c])
     # print(mix_data)
     # data = load_FAVA()
-    faithbench = load_FaithBench()
+    # faithbench = load_FaithBench()
+    facts = load_FACTSGrounding()
     breakpoint()

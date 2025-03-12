@@ -1,14 +1,22 @@
 # Correction Section
-run_correction: False
+run_correction: True
 correction_model: IdenticalCorrectionModel
 correction_model_args: 
   model_name: Identical
 
+# Dataset Section
+eval_datasets:
+  - RAGTruth
+  - FAVA
+  - FaithBench
+
 # Response Preprocessing section
-run_preprocess: False
+run_preprocess: True
 preprocessors:
   - Sentencizer:
       decontext: False
+      input_column: corrected
+      output_column: processed
 
 # Evaluation Section
 # Add metrics as:
@@ -16,21 +24,14 @@ preprocessors:
 # - METRIC_CLASS2:
 #     METRIC2_KWARGS (Optional)
 run_eval: True
-eval_datasets:
-  - RAGTruth
-  # - FAVA
-  - FaithBench
 eval_metrics:
-  # - HHEM:
-  #     model_path: vectara/HHEM-2.1
-  # - HHEM:
-  #     model_path: vectara/HHEM-2.1
-  #     revision: -sent
-  #     claim_column: processed
-  # - Rouge:
-  #     context_column: claim
-  - Minicheck:
+  - HHEM:
+      model_path: vectara/HHEM-2.1
+      revision: -sent
+      claim_column: processed
   - Minicheck:
       revision: -sent
       claim_column: processed
+  - Rouge:
+      context_column: claim
       
