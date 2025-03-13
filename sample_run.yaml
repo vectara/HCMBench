@@ -1,0 +1,39 @@
+# Correction Section
+run_correction: True
+correction_model: IdenticalCorrectionModel
+correction_model_args: 
+  model_name: Identical
+
+# Dataset Section
+eval_datasets:
+  # - RAGTruth
+  # - FAVA
+  # - FaithBench
+  - FACTSGrounding
+
+# Response Preprocessing section
+run_preprocess: True
+preprocessors:
+  - Sentencizer:
+      decontext: False
+      input_column: corrected
+      output_column: processed
+
+# Evaluation Section
+# Add metrics as:
+# - METRIC_CLASS1:
+# - METRIC_CLASS2:
+#     METRIC2_KWARGS (Optional)
+run_eval: True
+eval_metrics:
+  - HHEM:
+      model_name: HHEM#2.1-sent
+      model_path: vectara/HHEM-2.1
+      claim_column: processed
+  - Minicheck:
+      model_name: Minicheck#7B-sent
+      claim_column: processed
+  - Rouge:
+      model_name: Rouge#L
+      context_column: claim
+      
