@@ -38,10 +38,10 @@ class Processor:
             time.sleep(1/self.RPS * self.num_proc)
         return self.merge_output(sample, output)
 
-    def process_dataset(self, data: Dataset, num_proc=1) -> Dataset:
+    def process_dataset(self, data: Dataset) -> Dataset:
         """ Process a dataset with this processor, can be override for batch processing """
         data = data.map(
             self.map_fn,
-            num_proc=num_proc
+            num_proc=self.num_proc
         )
         return data
