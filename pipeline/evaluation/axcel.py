@@ -1,12 +1,18 @@
+""" 
+AXCEL: Automated eXplainable Consistency Evaluation using LLMs 
+https://arxiv.org/abs/2409.16984
+"""
+
 from .evaluator import EvaluationModel, MetricOutput
 from ..oai_utils import get_LLM_response
 
-SYSTEM_PROMPT = """You are given two texts, a source text and derived text. Verify if the derived text is factually correct with respect to the source. Use the following step-by-step instructions to assess factual correctness of derived text.
- Step 1 - Extract all the facts from the derived text.
- Step 2 - Check if the extracted facts can
- be verified from the source text.
- Step 3 - Rate the correctness of each fact on the scale of 1 to 5 based on the verification from previous step.
- Step 4 - Generate output in a consistent format following the format of the examples given below."""
+SYSTEM_PROMPT = \
+"""You are given two texts, a source text and derived text. Verify if the derived text is factually correct with respect to the source. Use the following step-by-step instructions to assess factual correctness of derived text.
+Step 1 - Extract all the facts from the derived text.
+Step 2 - Check if the extracted facts can
+be verified from the source text.
+Step 3 - Rate the correctness of each fact on the scale of 1 to 5 based on the verification from previous step.
+Step 4 - Generate output in a consistent format following the format of the examples given below."""
 
 EXAMPLE1_INPUT = """<Source Text>
 Manchester City are keen to sign Anderlecht teenager Evangelos Patoulidis. The 14-year-old playmaker is regarded as one of the best talents to emerge from Anderlecht’s youth set-up and has also attracted attention from Arsenal and Barcelona. The Belgian starlet rejected a move to Barcelona’s La Masia academy when he was 12 as his family wanted him to continue his studies . He has continued to impress and City have held discussions with Anderlecht chairman Roger Vanden Stock in the hope of agreeing a compensation package. Manuel Pellegrini is looked to build for the future by snapping up hot property Evangelos Patoulidis.
@@ -59,24 +65,27 @@ def parse_output(output):
 class AXCEL(EvaluationModel):
     """AXCEL LLM-as-judge for evaluating generated output.
     """
-    def __init__(self, model_path="anthropic/claude-3.5-sonnet", 
+    def __init__(self, model_path="anthropic/claude-3.5-sonnet",
         base_url="https://openrouter.ai/api/v1",
         **kwargs):
         super().__init__(model_name=type(self).__name__ + '#' + model_path, **kwargs)
         self.model = model_path
         self.base_url = base_url
-        
+
     def process_one(self, sample:dict, debug=False) -> MetricOutput:
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": EXAMPLE1_INPUT},
             {"role": "assistant", "content": EXAMPLE1_OUTPUT},
-            {"role": "user", "content": INPUT_TEMPLATE.format(source_text=sample[self.context_column], 
-                                                              derived_text=sample[self.claim_column])}
+            {
+                "role": "user", 
+                "content": INPUT_TEMPLATE.format(source_text=sample[self.context_column],
+                                                derived_text=sample[self.claim_column])
+            }
         ]
         completion = get_LLM_response(
-            base_url = self.base_url, 
-            model = self.model, 
+            base_url = self.base_url,
+            model = self.model,
             messages = messages,
             temperature=0.0,
             max_tokens=1000
@@ -86,19 +95,7 @@ class AXCEL(EvaluationModel):
             print(llm_return)
         score = parse_output(llm_return)
         return MetricOutput(**{
-            "score": score / 5,
+            "score": (score-1) / 4, # Normalize the score from 1-5 scale to 0-1
             "judge_model": self.model_name,
             "extra_output": llm_return
         })
-
-def main():
-    model = AXCEL(claim_column='claim')
-    sample = {
-        "claim": "Chenyu has 11 followers on Twitter.",
-        "context": "Chenyu only had 5 followers on Twitter before, but now his followers have doubled."
-    }
-    output = model.process_one(sample, debug=False)
-    print(output)
-
-if __name__ == '__main__':
-    main()

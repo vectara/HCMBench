@@ -1,11 +1,16 @@
+"""
+ROUGE
+https://huggingface.co/spaces/evaluate-metric/rouge
+"""
+import evaluate
+
 from .evaluator import EvaluationModel, MetricOutput
 
 class Rouge(EvaluationModel):
     """Rouge score for evaluating the similarity before and after correctiom
     """
     def __init__(self, variant='rougeL', **kwargs):
-        super().__init__(model_name = type(self).__name__ + '#' + variant, **kwargs)
-        import evaluate
+        super().__init__(**kwargs)
         self.variant = variant
         self.rouge = evaluate.load('rouge')
 
@@ -22,8 +27,3 @@ class Rouge(EvaluationModel):
             "score": results[self.variant],
             "judge_model": self.model_name
         })
-    
-def main():
-    sample = {"corrected": "Hello world", "context": "Hello general"}
-    rouge = Rouge()
-    print(rouge.process_one(sample))

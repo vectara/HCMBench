@@ -1,9 +1,14 @@
-# Sentence Decontextualization from MiniCheck: Efficient Fact-Checking of LLMs on Grounding Documents
-# https://aclanthology.org/2024.emnlp-main.499.pdf
-from .preprocessor import Preprocessor
+"""
+Sentence Decontextualization from MiniCheck: Efficient Fact-Checking of LLMs on Grounding Documents
+https://aclanthology.org/2024.emnlp-main.499.pdf
+"""
+
 from typing import List
 import json
+
 import spacy
+
+from .preprocessor import Preprocessor
 from ..oai_utils import get_LLM_response
 
 SYSTEM_PROMPT = """You are provided with a context and a claim. Please first determine if the claim can stand alone without the context. If not, provide a decontextualized version of the claim that incorporates necessary information from the context to make it self-contained. The revision should be as minimum as possible. You will always change double quotes to single quotes in the claim. For example, write 'glass' instead of "glass". Please respond with a JSON format: {"label": "yes"/"no", "decontext": "NA"/decontextualized claim}."""
@@ -32,10 +37,9 @@ INPUT_TEMPLATE = """Context: {context}
 Claim: {claim}"""
 
 class Sentencizer(Preprocessor):
-    """Breakdown text into individual sentences.
-    """
-    def __init__(self, 
-            model_path="anthropic/claude-3.5-sonnet", 
+    """ Breakdown text into individual sentences. """
+    def __init__(self,
+            model_path="anthropic/claude-3.5-sonnet",
             base_url="https://openrouter.ai/api/v1",
             decontext=False,
             **kwargs
@@ -49,7 +53,8 @@ class Sentencizer(Preprocessor):
     def process_one(self, sample: dict) -> List[str]:
         doc = self.nlp(sample[self.input_column])
         sents = [sent.text.strip() for sent in doc.sents]
-        if len(sents) == 0: sents = ['.']
+        if len(sents) == 0:
+            sents = ['.']
         if self.decontext:
             decontext_sents = [sents[0]]
             for idx, sent in enumerate(sents[1:], start=1):
@@ -61,7 +66,7 @@ class Sentencizer(Preprocessor):
                 )
             sents = decontext_sents
         return sents
-    
+
     def decontextualize(self, context: str, claim: str):
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -74,8 +79,8 @@ class Sentencizer(Preprocessor):
             {"role": "user", "content": INPUT_TEMPLATE.format(context=context, claim=claim)}
         ]
         completion = get_LLM_response(
-            base_url = self.base_url, 
-            model = self.model, 
+            base_url = self.base_url,
+            model = self.model,
             messages = messages,
             temperature = 0.0,
             max_tokens = 1000)
@@ -84,11 +89,6 @@ class Sentencizer(Preprocessor):
             resp = json.loads(llm_return)
             if resp["label"] == "no":
                 return resp["decontext"]
-        except:
+        except Exception:
             pass
         return claim
-
-def main():
-    sentencizer = Sentencizer(decontext=True, input_column='input')
-    text = """A wild card, unknown when the strike began, was Taylor Swift’s concert film. It certainly filled an October void that existed before the strike and its SAG-AFTRA waver meant she could promote it."""
-    print(sentencizer.process_one({"input": text}))

@@ -1,8 +1,10 @@
+""" The file implements a wrapper for OPENAI client with retry and cache """
+
 from openai import OpenAI
 from joblib import Memory
 from tenacity import retry, stop_after_attempt, wait_fixed
-location = './LLM_cache'
-memory = Memory(location, verbose=0)
+LOCATION = './LLM_cache'
+memory = Memory(LOCATION, verbose=0)
 
 @memory.cache
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3))

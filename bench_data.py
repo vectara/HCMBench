@@ -1,19 +1,21 @@
-from datasets import load_dataset, Dataset, concatenate_datasets
-from utils import load_jsonl
-import os
+""" This file contains Dateset Loader """
 
-def load_C2DD2C():
-    c2d_d2c = load_dataset("lytang/C2D-and-D2C-MiniCheck")
-    c2d_d2c = c2d_d2c.rename_column('doc', 'context')
-    c2d_d2c = concatenate_datasets([c2d_d2c["c2d"], c2d_d2c["d2c"]])
-    return c2d_d2c
+import os
+from datasets import load_dataset, Dataset, concatenate_datasets
+from utils import load_jsonl, dump2jsonl
 
 def load_FAVA(data_dir='fava-uw/fava-data'):
+    """ 
+    Load the FAVA dataset from huggingface hub 
+    We only take the 3% of the data ~900 samples to speed things up
+    """
     data = load_dataset(data_dir, split='train[:3%]')
+    fava_pattern = ("Please identify all the errors in the following passage "
+               "using the references provided and suggest edits:\nText:")
     def process_fava(sample):
         context = sample["prompt"].partition("Read the following references:")[2].strip()
-        context = context.rpartition("Please identify all the errors in the following passage using the references provided and suggest edits:\nText:")[0].strip()
-        claim = sample["prompt"].rpartition("Please identify all the errors in the following passage using the references provided and suggest edits:\nText:")[2].strip()
+        context = context.rpartition(fava_pattern)[0].strip()
+        claim = sample["prompt"].rpartition(fava_pattern)[2].strip()
         sample["context"] = context
         sample["claim"] = claim
         sample["extra_label"] = sample["completion"]
@@ -22,6 +24,7 @@ def load_FAVA(data_dir='fava-uw/fava-data'):
     return data
 
 def load_RAGTruth(data_dir="data/RAGTruth/dataset", split="test"):
+    """ Load the RAGTruth dataset from local path (Manual download required) """
     response = load_jsonl(os.path.join(data_dir, "response.jsonl"))
     if split is not None:
         response = [item for item in response if item["split"] == split]
@@ -46,16 +49,17 @@ def load_RAGTruth(data_dir="data/RAGTruth/dataset", split="test"):
                 "source": source["source"]
             }
         }
-        if source["task_type"] == "Summary": 
+        if source["task_type"] == "Summary":
             sample["context"] = source["source_info"]
         else:
             continue
-        
+
         data.append(sample)
     data = Dataset.from_list(data)
     return data
 
 def load_FaithBench(data_dir="data/FaithBench"):
+    """ Load the FaithBench dataset from local path (Manual download required) """
     data = load_dataset("csv", data_files=os.path.join(data_dir, 'FaithBench.csv'), split='train')
     data = data.filter(lambda x: x['worst-label'] in ['Unwanted', 'Consistent'])
     def convert_label(sample):
@@ -72,11 +76,17 @@ def load_FaithBench(data_dir="data/FaithBench"):
     return data
 
 def load_FACTSGrounding(data_dir="data/FACTSGrounding"):
+    """ Load the FACTS Grounding dataset from local path (Manual download required) """
     data = load_dataset("csv", data_files=os.path.join(data_dir, 'data.csv'), split='train')
-    response_columns = [column.partition('-response')[0] for column in data.column_names if column.endswith('-response')]
+    response_columns = [column.partition('-response')[0] \
+                        for column in data.column_names if column.endswith('-response')]
     procssed = []
     for sample in data:
+        if sample["context_document"] is None:
+            continue
         for llm in response_columns:
+            if sample[f"{llm}-response"] is None:
+                continue
             procssed.append({
                 "claim": sample[f"{llm}-response"].strip(),
                 "context": sample['context_document'].strip(),
@@ -87,13 +97,3 @@ def load_FACTSGrounding(data_dir="data/FACTSGrounding"):
                 }
             })
     return Dataset.from_list(procssed)
-
-if __name__ == '__main__':
-    # ragtruth = load_RAGTruth()
-    # c2dd2c = load_C2DD2C()
-    # mix_data = concatenate_datasets([ragtruth, c2dd2c])
-    # print(mix_data)
-    # data = load_FAVA()
-    # faithbench = load_FaithBench()
-    facts = load_FACTSGrounding()
-    breakpoint()
