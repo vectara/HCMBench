@@ -9,7 +9,7 @@ import numpy as np
 from .evaluator import EvaluationModel, MetricOutput
 
 class Minicheck(EvaluationModel):
-    """Minicheck model for evaluating generated output."""
+    """ Minicheck model for evaluating generated output. """
     def __init__(self, model_path="Bespoke-MiniCheck-7B", **kwargs):
         super().__init__(**kwargs)
         self.scorer = MiniCheck(model_name=model_path)

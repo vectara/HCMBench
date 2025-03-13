@@ -63,8 +63,7 @@ def parse_output(output):
     return min(scores)
 
 class AXCEL(EvaluationModel):
-    """AXCEL LLM-as-judge for evaluating generated output.
-    """
+    """ AXCEL LLM-as-judge for evaluating generated output. """
     def __init__(self, model_path="anthropic/claude-3.5-sonnet",
         base_url="https://openrouter.ai/api/v1",
         **kwargs):
