@@ -9,8 +9,7 @@ from ..oai_utils import get_LLM_response
 SYSTEM_PROMPT = \
 """You are given two texts, a source text and derived text. Verify if the derived text is factually correct with respect to the source. Use the following step-by-step instructions to assess factual correctness of derived text.
 Step 1 - Extract all the facts from the derived text.
-Step 2 - Check if the extracted facts can
-be verified from the source text.
+Step 2 - Check if the extracted facts can be verified from the source text.
 Step 3 - Rate the correctness of each fact on the scale of 1 to 5 based on the verification from previous step.
 Step 4 - Generate output in a consistent format following the format of the examples given below."""
 
@@ -59,7 +58,10 @@ def parse_output(output):
     for line in lines:
         if "Rating: " in line and "**Verification:**" in line:
             score = line.split(":")[-1].strip()
-            scores.append(float(score))
+            try:
+                scores.append(float(score))
+            except Exception:
+                pass
     return min(scores)
 
 class AXCEL(EvaluationModel):

@@ -44,6 +44,8 @@ def parse_output(output):
     for line in lines:
         if line.startswith('-'):
             claims.append(line[1:].strip())
+    if len(claims) == 0:
+        claims = ["."]
     return claims
 
 class ClaimExtractor(Preprocessor):
@@ -54,7 +56,7 @@ class ClaimExtractor(Preprocessor):
         self.model = model_path
         self.base_url = base_url
 
-    def process_one(self, sample: dict) -> List[str]:
+    def process_one(self, sample: dict, debug=False) -> List[str]:
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": EXAMPLE1_INPUT},
@@ -68,4 +70,6 @@ class ClaimExtractor(Preprocessor):
             temperature = 0.0,
             max_tokens = 1000)
         llm_return = completion.choices[0].message.content
+        if debug:
+            print(llm_return)
         return parse_output(llm_return)
