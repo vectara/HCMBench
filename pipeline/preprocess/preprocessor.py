@@ -1,5 +1,6 @@
-from ..processor import Processor
+""" The file contains abstract class for a preprocessor """
 from typing import Any, Dict
+from ..processor import Processor
 
 class Preprocessor(Processor):
     """ Abstract class for claim preprocessor """

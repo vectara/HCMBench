@@ -1,9 +1,11 @@
+""" The configuration for yaml/argument parser """
+import os
+import sys
 import dataclasses
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, NewType, Optional, Tuple
+
 from transformers import HfArgumentParser
-import os
-import sys
 
 DataClassType = NewType("DataClassType", Any)
 

@@ -1,4 +1,4 @@
-# This file is for an abstract HCM model
+""" This file is for an abstract HCM model """
 from typing import Dict, Optional
 from ..processor import Processor, ProcessorOutput
 
@@ -8,6 +8,7 @@ class CorrectionOutput(ProcessorOutput):
     extra_output: Optional[str] = None
 
 class CorrectionModel(Processor):
+    """ Abstract class for a correction model """
     def __init__(self, model_name, **kwargs):
         super().__init__(**kwargs)
         self.model_name = model_name
@@ -16,12 +17,14 @@ class CorrectionModel(Processor):
         """ 
         The function implements the correction process taking sample as input.
         Each sample should include two columns: 
+            
             "claim": model's generation, may or may not be factually error
             "context": the grounding material used to generate the claim 
         """
         raise NotImplementedError
 
 class IdenticalCorrectionModel(CorrectionModel):
+    """ A pseudo correction model that returns the exact same response """
     def __init__(self, model_name='Identical'):
         super().__init__(model_name)
 
@@ -30,7 +33,3 @@ class IdenticalCorrectionModel(CorrectionModel):
             corrected=sample["claim"],
             correct_model=self.model_name,
         )
-
-def main():
-    icm = IdenticalCorrectionModel()
-    print(icm.process_one({"claim": "You happy", "context": "I not happy"}))

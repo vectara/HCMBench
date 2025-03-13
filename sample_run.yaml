@@ -6,9 +6,10 @@ correction_model_args:
 
 # Dataset Section
 eval_datasets:
-  - RAGTruth
-  - FAVA
-  - FaithBench
+  # - RAGTruth
+  # - FAVA
+  # - FaithBench
+  - FACTSGrounding
 
 # Response Preprocessing section
 run_preprocess: True
@@ -26,12 +27,13 @@ preprocessors:
 run_eval: True
 eval_metrics:
   - HHEM:
+      model_name: HHEM#2.1-sent
       model_path: vectara/HHEM-2.1
-      revision: -sent
       claim_column: processed
   - Minicheck:
-      revision: -sent
+      model_name: Minicheck#7B-sent
       claim_column: processed
   - Rouge:
+      model_name: Rouge#L
       context_column: claim
       

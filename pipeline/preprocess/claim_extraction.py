@@ -1,7 +1,10 @@
-# Claim Extraction from HalluMeasure: Fine-grained Hallucination Measurement Using Chain-of-Thought Reasoning
-# https://aclanthology.org/2024.emnlp-main.837.pdf
-from .preprocessor import Preprocessor
+"""
+Claim Extraction from HalluMeasure: Fine-grained Hallucination Measurement Using Chain-of-Thought Reasoning
+https://aclanthology.org/2024.emnlp-main.837.pdf
+"""
 from typing import List
+
+from .preprocessor import Preprocessor
 from ..oai_utils import get_LLM_response
 
 SYSTEM_PROMPT = """A claim is a short sentence containing a single piece of information. You will extract claims from a given text inside <text></text> XML tags.
@@ -44,14 +47,13 @@ def parse_output(output):
     return claims
 
 class ClaimExtractor(Preprocessor):
-    """Breakdown text into atomic facts.
-    """
-    def __init__(self, model_path="anthropic/claude-3.5-sonnet", 
+    """ Breakdown text into atomic facts. """
+    def __init__(self, model_path="anthropic/claude-3.5-sonnet",
         base_url="https://openrouter.ai/api/v1", **kwargs):
         super().__init__(**kwargs)
         self.model = model_path
         self.base_url = base_url
-    
+
     def process_one(self, sample: dict) -> List[str]:
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -60,15 +62,10 @@ class ClaimExtractor(Preprocessor):
             {"role": "user", "content": INPUT_TEMPLATE.format(text=sample[self.input_column])}
         ]
         completion = get_LLM_response(
-            base_url = self.base_url, 
-            model = self.model, 
+            base_url = self.base_url,
+            model = self.model,
             messages = messages,
             temperature = 0.0,
             max_tokens = 1000)
         llm_return = completion.choices[0].message.content
         return parse_output(llm_return)
-
-def main():
-    extractor = ClaimExtractor(input_column="text")
-    text = """Automating the measurement of hallucinations in LLM-generated responses is a challenging task as it requires careful investigation of each factual claim in a response. In this paper, we introduce HalluMeasure, a new LLM-based hallucination detection mechanism that decomposes an LLM response into atomic claims, and evaluates each atomic claim against the provided reference context."""
-    print(extractor.process_one({"text": text}))
