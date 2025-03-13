@@ -55,7 +55,7 @@ INPUT_TEMPLATE = """<Source Text>
 
 def parse_output(output):
     lines = output.split('\n')
-    scores = []
+    scores = [5]
     for line in lines:
         if "Rating: " in line and "**Verification:**" in line:
             score = line.split(":")[-1].strip()
@@ -67,7 +67,7 @@ class AXCEL(EvaluationModel):
     def __init__(self, model_path="anthropic/claude-3.5-sonnet",
         base_url="https://openrouter.ai/api/v1",
         **kwargs):
-        super().__init__(model_name=type(self).__name__ + '#' + model_path, **kwargs)
+        super().__init__(**kwargs)
         self.model = model_path
         self.base_url = base_url
 
