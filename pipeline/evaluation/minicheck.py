@@ -20,12 +20,49 @@ class Minicheck(EvaluationModel):
         if isinstance(claim, str):
             claims = [claim]
             docs = [context]
-        else:
+        elif isinstance(claim, list) and isinstance(context, str):
             claims = claim
             docs = [context] * len(claims)
+        else:
+            claims = claim
+            docs = context
         _, raw_prob, _, _ = self.scorer.score(docs=docs, claims=claims)
         return MetricOutput(**{
             "judge_model": self.model_name,
             "score": min(raw_prob),
-            "extra_output": np.argmin(raw_prob),
+            "extra_output": raw_prob,
         })
+
+    def map_fn(self, sample, idx, scores, sample_boundary):
+        sample_scores = scores[sample_boundary[idx]:sample_boundary[idx+1]]
+        output = MetricOutput(
+            score=min(sample_scores),
+            extra_output=sample_scores,
+            judge_model=self.model_name
+        )
+        return super().merge_output(sample, output)
+
+    def process_dataset(self, data: Dataset) -> Dataset:
+        claims = data[self.claim_column]
+        contexts = data[self.context_column]
+        sample_boundary = list(range(len(contexts))) + [len(contexts)]
+        if isinstance(claims[0], list):
+            new_contexts = [[contexts[idx]]*len(claim) for idx, claim in enumerate(claims)]
+            sample_boundary = [0] + np.cumsum([len(claim) for claim in claims]).tolist()
+            # Flatten the claim / context
+            contexts = sum(new_contexts, [])
+            claims = sum(claims, [])
+
+        scores = self.process_one({
+            self.claim_column: claims,
+            self.context_column: contexts
+        }).extra_output
+
+        data = data.map(self.map_fn,
+                        with_indices=True,
+                        fn_kwargs={
+                            "scores": scores,
+                            "sample_boundary": sample_boundary
+                        })
+        return data
+
