@@ -5,7 +5,7 @@ import os
 
 from datasets import load_dataset
 
-FACTUALITY_METRICS = ["AXCEL", "HHEM", "Minicheck"]
+FACTUALITY_METRICS = ["AXCEL", "HHEM", "Minicheck", "FACTSGJudge"]
 SIMILARITY_METRICS = ["Rouge"]
 ALL_METRICS = FACTUALITY_METRICS + SIMILARITY_METRICS
 
