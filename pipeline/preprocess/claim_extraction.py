@@ -1,5 +1,6 @@
 """
-Claim Extraction from HalluMeasure: Fine-grained Hallucination Measurement Using Chain-of-Thought Reasoning
+Claim Extraction adapted from 
+HalluMeasure: Fine-grained Hallucination Measurement Using Chain-of-Thought Reasoning
 https://aclanthology.org/2024.emnlp-main.837.pdf
 """
 from typing import List
@@ -13,9 +14,7 @@ Here are the "Task-rules" you must follow when generating the claims.
 <task-rules>
     <rule>The claim should be entirely self-contained. For instance, the claim should be comprehended without relying on other claims.</rule>
     <rule>The claim should not contain pronouns. If there are pronouns in the input text, replace them with their corresponding nouns when generating the claims.</rule>
-    <rule>The claims should not exceed 15 words.</rule>
     <rule>You will always output a list of the extracted claims.</rule>
-    <rule>You will always change double quotes to single quotes in the claims. For example, write 'glass' instead of "glass".</rule>
 </task-rules>
 """
 
@@ -42,6 +41,7 @@ def parse_output(output):
     lines = output.split('\n')
     claims = []
     for line in lines:
+        line = line.strip()
         if line.startswith('-'):
             claims.append(line[1:].strip())
     if len(claims) == 0:
