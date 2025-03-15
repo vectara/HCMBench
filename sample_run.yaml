@@ -14,10 +14,16 @@ eval_datasets:
 # Response Preprocessing section
 run_preprocess: True
 preprocessors:
-  - Sentencizer:
-      decontext: False
-      input_column: corrected
-      output_column: processed
+  # - Sentencizer:
+  #     decontext: False
+  #     input_column: corrected
+  #     output_column: processed
+  - ClaimExtractor:
+      model_path: meta-llama/llama-3.3-70b-instruct
+      output_column: extracted
+      RPS: 20
+      num_proc: 20
+
 
 # Evaluation Section
 # Add metrics as:
@@ -26,14 +32,17 @@ preprocessors:
 #     METRIC2_KWARGS (Optional)
 run_eval: True
 eval_metrics:
-  - HHEM:
-      model_name: HHEM#2.1-sent
-      model_path: vectara/HHEM-2.1
-      claim_column: processed
-  - Minicheck:
-      model_name: Minicheck#7B-sent
-      claim_column: processed
   - Rouge:
       model_name: Rouge#L
       context_column: claim
-      
+  - HHEM:
+      model_name: HHEM#2.1-claim
+      model_path: vectara/HHEM-2.1
+      claim_column: extracted
+  - Minicheck:
+      model_name: Minicheck#7B-claim
+      claim_column: extracted
+  - FACTSGJudge:
+      model_name: FACTSGJudge#Llama-3.3-70b-json
+      RPS: 20
+      num_proc: 20

@@ -1,5 +1,6 @@
 """ Pipeline runner """
 import sys
+import os
 import logging
 import multiprocessing
 
@@ -27,11 +28,14 @@ def run_processor(eval_args, processor_name, processor_args):
         logger.info(f"Loading {evalset}")
         model_name = eval_args.correction_model_args["model_name"]
         dump_to = f'output/{model_name}/{evalset}/corrected.jsonl'
-        if isinstance(processor, CorrectionModel):
+        if os.path.exists(dump_to):
+            if isinstance(processor, CorrectionModel):
+                logger.warning(f"Using existing file: {dump_to}")
+            data = load_dataset('json', data_files=dump_to, split="train")
+        else:
+            assert isinstance(processor, CorrectionModel)
             dataloader = getattr(bench_data, f"load_{evalset}")
             data = dataloader()
-        else:
-            data = load_dataset('json', data_files=dump_to, split="train")
         dump_dataset = processor.process_dataset(data)
         dump_dataset.to_json(dump_to, force_ascii=False)
 
