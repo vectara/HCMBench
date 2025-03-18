@@ -89,32 +89,14 @@ class BenchmarkArguments:
     """
     Arguments to data / model we are going to eval with
     """
-    run_correction: bool = field(
-        default=True,
-    )
-    correction_model: Optional[str] = field(
-        default="IdenticalCorrectionModel",
-        metadata={"help": "The correction model to use."}
-    )
-    correction_model_args: Optional[Dict] = field(
-        default=None,
-        metadata={"help": "The arguments for correction model class."}
-    )
-    run_preprocess: bool = field(
-        default=True,
-    )
-    preprocessors: Optional[List[Dict]] = field(
-        default=None,
-        metadata={"help": "List of preprocessor to run, e.g., Sentencizer."}
-    )
-    run_eval: bool = field(
-        default=True,
+    output_path: str = field(
+        metadata={"help": "The output path for the evaluation result."}
     )
     eval_datasets: Optional[List[str]] = field(
         default=None,
-        metadata={"help": "List of datasets to be loaded to evaluate."}
+        metadata={"help": "List of datasets to be loaded for evaluation."}
     )
-    eval_metrics: Optional[List[Dict]] = field(
+    pipeline: Optional[List[Dict]] = field(
         default=None,
-        metadata={"help": "List of metrics to run."}
+        metadata={"help": "The pipeline to run sequentially."}
     )

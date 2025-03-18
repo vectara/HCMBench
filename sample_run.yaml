@@ -1,9 +1,4 @@
-# Correction Section
-run_correction: True
-correction_model: IdenticalCorrectionModel
-correction_model_args: 
-  model_name: Identical
-
+output_path: output/Identical/
 # Dataset Section
 eval_datasets:
   # - RAGTruth
@@ -11,27 +6,15 @@ eval_datasets:
   # - FaithBench
   - FACTSGrounding
 
-# Response Preprocessing section
-run_preprocess: True
-preprocessors:
-  # - Sentencizer:
-  #     decontext: False
-  #     input_column: corrected
-  #     output_column: processed
+# Eval Pipeline
+pipeline:
+  - IdenticalCorrectionModel:
+      model_name: Identical
   - ClaimExtractor:
       model_path: meta-llama/llama-3.3-70b-instruct
       output_column: extracted
       RPS: 20
       num_proc: 20
-
-
-# Evaluation Section
-# Add metrics as:
-# - METRIC_CLASS1:
-# - METRIC_CLASS2:
-#     METRIC2_KWARGS (Optional)
-run_eval: True
-eval_metrics:
   - Rouge:
       model_name: Rouge#L
       context_column: claim
