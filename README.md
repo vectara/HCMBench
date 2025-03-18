@@ -28,12 +28,14 @@ See [``display_results.ipynb``](display_results.ipynb)
 ## Hallucination Evaluation Metric (HEM)
 1. [HHEM](pipeline/evaluation/hhem.py) (Source: https://huggingface.co/vectara/hallucination_evaluation_model)
 2. [Minicheck](pipeline/evaluation/minicheck.py) (Source: https://huggingface.co/bespokelabs/Bespoke-MiniCheck-7B)
-3. [AXCEL](pipeline/evaluation/axcel.py) (Source: https://arxiv.org/abs/2409.16984)
+3. [FACTSJudge](pipeline/evaluation/factsgrounding.py) (Source: https://arxiv.org/abs/2501.03200)
+4. [AXCEL](pipeline/evaluation/axcel.py) (Source: https://arxiv.org/abs/2409.16984)
 
 ## Dataset
  - [RAGTruth](https://github.com/ParticleMedia/RAGTruth), only summarization task
  - [FAVA](https://huggingface.co/datasets/fava-uw/fava-data), 3% front data
  - [FaithBench](https://github.com/vectara/FaithBench), only "Unwanted" and "Consistent"
+ - [FACTSGrounding](https://www.kaggle.com/datasets/deepmind/facts-grounding-examples), public set
 
 ## Add a new model / preprocessor / metric / dataset
 - **For HCM:** Implement your own model class which inherits from [CorrectionModel](pipeline/correction/correction_model.py)
