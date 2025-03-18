@@ -9,9 +9,13 @@ class CorrectionOutput(ProcessorOutput):
 
 class CorrectionModel(Processor):
     """ Abstract class for a correction model """
-    def __init__(self, model_name, **kwargs):
+    def __init__(self, model_name, 
+                 claim_column='claim', 
+                 context_column='context', **kwargs):
         super().__init__(**kwargs)
         self.model_name = model_name
+        self.claim_column = claim_column
+        self.context_column = context_column
 
     def process_one(self, sample:Dict) -> CorrectionOutput:
         """ 
@@ -30,6 +34,6 @@ class IdenticalCorrectionModel(CorrectionModel):
 
     def process_one(self, sample:Dict) -> CorrectionOutput:
         return CorrectionOutput(
-            corrected=sample["claim"],
+            corrected=sample[self.claim_column],
             correct_model=self.model_name,
         )

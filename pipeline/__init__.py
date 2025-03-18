@@ -1,7 +1,11 @@
 from .correction.fava import FAVA
 from .correction.correction_model import IdenticalCorrectionModel
 from .correction.oai_hcm import OAI_HCM
-from .correction.vectara_hcm import VectaraHCM
+try:
+    from .correction.chenyu_hcm import ChenyuHCM
+    from .correction.vectara_hcm import VectaraHCM
+except Exception:
+    pass
 
 from .evaluation.rouge import Rouge
 from .evaluation.hhem import HHEM

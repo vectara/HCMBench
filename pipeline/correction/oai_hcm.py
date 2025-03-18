@@ -18,8 +18,8 @@ class OAI_HCM(CorrectionModel):
             messages.append({"role": "system", "content": self.system_prompt})
         messages.append({
             "role": "user", 
-            "content": self.user_prompt.format(claim=sample["claim"], 
-                                               context=sample["context"])
+            "content": self.user_prompt.format(claim=sample[self.claim_column], 
+                                               context=sample[self.context_column])
         })
         completion = get_LLM_response(
             base_url = self.base_url,
