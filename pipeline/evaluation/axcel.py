@@ -4,7 +4,7 @@ https://arxiv.org/abs/2409.16984
 """
 
 from .evaluator import EvaluationModel, MetricOutput
-from ..oai_utils import get_LLM_response
+from ..oai_utils import OAICaller
 
 SYSTEM_PROMPT = \
 """You are given two texts, a source text and derived text. Verify if the derived text is factually correct with respect to the source. Use the following step-by-step instructions to assess factual correctness of derived text.
@@ -64,14 +64,13 @@ def parse_output(output):
                 pass
     return min(scores)
 
-class AXCEL(EvaluationModel):
+class AXCEL(OAICaller, EvaluationModel):
     """ AXCEL LLM-as-judge for evaluating generated output. """
-    def __init__(self, model_path="anthropic/claude-3.5-sonnet",
-        base_url="https://openrouter.ai/api/v1",
-        **kwargs):
-        super().__init__(**kwargs)
-        self.model = model_path
-        self.base_url = base_url
+    def __init__(self, 
+                 model="anthropic/claude-3.5-sonnet",
+                 base_url="https://openrouter.ai/api/v1",
+                 **kwargs):
+        super().__init__(model=model, base_url=base_url, **kwargs)
 
     def process_one(self, sample:dict, debug=False) -> MetricOutput:
         messages = [
@@ -84,14 +83,7 @@ class AXCEL(EvaluationModel):
                                                 derived_text=sample[self.claim_column])
             }
         ]
-        completion = get_LLM_response(
-            base_url = self.base_url,
-            model = self.model,
-            messages = messages,
-            temperature=0.0,
-            max_tokens=1000
-        )
-        llm_return = completion.choices[0].message.content
+        llm_return = self.llm_call(messages, debug)
         if debug:
             print(llm_return)
         score = parse_output(llm_return)

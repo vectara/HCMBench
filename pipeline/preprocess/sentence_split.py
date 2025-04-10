@@ -9,7 +9,7 @@ import json
 import spacy
 
 from .preprocessor import Preprocessor
-from ..oai_utils import get_LLM_response
+from ..oai_utils import OAICaller
 
 SYSTEM_PROMPT = """You are provided with a context and a claim. Please first determine if the claim can stand alone without the context. If not, provide a decontextualized version of the claim that incorporates necessary information from the context to make it self-contained. The revision should be as minimum as possible. You will always change double quotes to single quotes in the claim. For example, write 'glass' instead of "glass". Please respond with a JSON format: {"label": "yes"/"no", "decontext": "NA"/decontextualized claim}."""
 
@@ -36,17 +36,15 @@ INPUT_TEMPLATE = """Context: {context}
 
 Claim: {claim}"""
 
-class Sentencizer(Preprocessor):
+class Sentencizer(OAICaller, Preprocessor):
     """ Breakdown text into individual sentences. """
     def __init__(self,
-            model_path="anthropic/claude-3.5-sonnet",
+            model="anthropic/claude-3.5-sonnet",
             base_url="https://openrouter.ai/api/v1",
             decontext=False,
             **kwargs
         ):
-        super().__init__(**kwargs)
-        self.model = model_path
-        self.base_url = base_url
+        super().__init__(model=model, base_url=base_url, **kwargs)
         self.nlp = spacy.load('en_core_web_sm')
         self.decontext = decontext
 
@@ -78,13 +76,7 @@ class Sentencizer(Preprocessor):
             {"role": "assistant", "content": EXAMPLE3_OUTPUT},
             {"role": "user", "content": INPUT_TEMPLATE.format(context=context, claim=claim)}
         ]
-        completion = get_LLM_response(
-            base_url = self.base_url,
-            model = self.model,
-            messages = messages,
-            temperature = 0.0,
-            max_tokens = 1000)
-        llm_return = completion.choices[0].message.content
+        llm_return = self.llm_call(messages)
         try:
             resp = json.loads(llm_return)
             if resp["label"] == "no":

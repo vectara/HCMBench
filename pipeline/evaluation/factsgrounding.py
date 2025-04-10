@@ -3,7 +3,7 @@
 import json
 
 from .evaluator import EvaluationModel, MetricOutput
-from ..oai_utils import get_LLM_response
+from ..oai_utils import OAICaller
 
 PROMPT_JSON = \
 """You are a helpful and harmless AI assistant. You will be provided with a textual context and a model-generated response.
@@ -84,14 +84,13 @@ def parse_structured_json(ans):
         bool_ans = False
     return bool_ans, parsed_answers
 
-class FACTSGJudge(EvaluationModel):
+class FACTSGJudge(OAICaller, EvaluationModel):
     """ FactsGrounding LLM-as-judge """
-    def __init__(self, model_path="meta-llama/llama-3.3-70b-instruct",
-        base_url="https://openrouter.ai/api/v1",
-        **kwargs):
-        super().__init__(**kwargs)
-        self.model = model_path
-        self.base_url = base_url
+    def __init__(self, 
+                 model="meta-llama/llama-3.3-70b-instruct",
+                 base_url="https://openrouter.ai/api/v1",
+                 **kwargs):
+        super().__init__(model=model, base_url=base_url, **kwargs)
 
     def process_one(self, sample:dict, debug=False) -> MetricOutput:
         messages = [
@@ -101,14 +100,7 @@ class FACTSGJudge(EvaluationModel):
                                       .replace("{{response}}", sample[self.claim_column])
             },
         ]
-        completion = get_LLM_response(
-            base_url = self.base_url,
-            model = self.model,
-            messages = messages,
-            temperature=0.0,
-            max_tokens=1000
-        )
-        llm_return = completion.choices[0].message.content
+        llm_return = self.llm_call(messages, debug)
         if debug:
             print(llm_return)
         judge, _ = parse_structured_json(llm_return)

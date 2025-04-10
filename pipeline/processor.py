@@ -16,7 +16,7 @@ class Processor:
         Basic configurations for a processor
         Args:
             num_proc: the number of CPU process used when apply Dataset.map
-            RPS: rate per second, 0 meaning no limit constraint, used for handling LLM API calls
+            RPS: rate per second, 0 meaning no limit constraint, used for handling API calls
         """
         self.num_proc = num_proc
         self.RPS = RPS

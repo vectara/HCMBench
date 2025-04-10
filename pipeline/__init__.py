@@ -1,9 +1,10 @@
 from .correction.fava import FAVA
 from .correction.correction_model import IdenticalCorrectionModel
-from .correction.oai_hcm import OAI_HCM
 try:
     from .correction.chenyu_hcm import ChenyuHCM
     from .correction.vectara_hcm import VectaraHCM
+    from .correction.chenyu_hcm_v2 import ChenyuHCMv2
+    from .correction.chenyu_hcm_v3 import ChenyuHCMv3
 except Exception:
     pass
 
