@@ -27,7 +27,7 @@ def postprocess_metrics(sample, metrics):
     sample["vote_score"] = int(sum(binary_scores) > (len(metrics) / 2))
     return sample
 
-def aggregate_score(output_dir="output/", filter_fn=None):
+def aggregate_score(output_dir="output/", filter_fn=None, metric_list=None, vote_metrics=None):
     # Metrics aggregation
     models = os.listdir(output_dir)
     for model in models:
@@ -38,10 +38,12 @@ def aggregate_score(output_dir="output/", filter_fn=None):
                                 split="train")
             if filter_fn is not None:
                 data = data.filter(filter_fn)
-            metric_list = [column for column in data.column_names \
-                           if column.partition('#')[0] in ALL_METRICS]
-            vote_metrics = [column for column in data.column_names \
-                            if column.partition('#')[0] in FACTUALITY_METRICS]
+            if metric_list is None:
+                metric_list = [column for column in data.column_names \
+                            if column.partition('#')[0] in ALL_METRICS]
+            if vote_metrics is None:
+                vote_metrics = [column for column in data.column_names \
+                                if column.partition('#')[0] in FACTUALITY_METRICS]
             data = data.map(postprocess_metrics, fn_kwargs={"metrics": vote_metrics})
             data.to_json(os.path.join(dump_folder, 'voted.jsonl'), force_ascii=False)
 
