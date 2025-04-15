@@ -1,12 +1,5 @@
 from .correction.fava import FAVA
 from .correction.correction_model import IdenticalCorrectionModel
-try:
-    from .correction.chenyu_hcm import ChenyuHCM
-    from .correction.vectara_hcm import VectaraHCM
-    from .correction.chenyu_hcm_v2 import ChenyuHCMv2
-    from .correction.chenyu_hcm_v3 import ChenyuHCMv3
-except Exception:
-    pass
 
 from .evaluation.rouge import Rouge
 from .evaluation.hhem import HHEM

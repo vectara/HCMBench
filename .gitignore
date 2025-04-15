@@ -173,4 +173,3 @@ cython_debug/
 LLM_cache
 output
 pipeline/correction/vectara_hcm.py
-pipeline/correction/chenyu_hcm*.py

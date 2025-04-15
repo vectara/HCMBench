@@ -69,6 +69,7 @@ def parse_structured_json(ans):
         ans = ans.split('```json')[1].split('```')[0]
     ans = ans.strip()
     ans = ans.replace('}\n', '}\n@\n@\n')
+    # Handling cases where each json object is not in a single line
     parsed_answers = []
     for line in ans.split('\n@\n@\n'):
         try:
