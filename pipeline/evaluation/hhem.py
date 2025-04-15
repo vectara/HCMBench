@@ -1,7 +1,7 @@
 """ https://huggingface.co/vectara/hallucination_evaluation_model """
 import torch
 import numpy as np
-from transformers import AutoModelForTokenClassification, AutoTokenizer
+from transformers import AutoModelForTokenClassification, AutoModelForSequenceClassification, AutoTokenizer
 from datasets import Dataset
 from tqdm import tqdm
 
@@ -20,8 +20,13 @@ class HHEM(EvaluationModel):
                  device="cuda:0", batch_size=1, **kwargs):
         super().__init__(**kwargs)
 
-        self.model = AutoModelForTokenClassification.from_pretrained(model_path,
-                                                                     trust_remote_code=True)
+        if model_path == "vectara/hallucination_evaluation_model":
+            self.model = AutoModelForSequenceClassification.from_pretrained(model_path,
+                                                                        trust_remote_code=True)
+            self.model = self.model.t5
+        else:
+            self.model = AutoModelForTokenClassification.from_pretrained(model_path,
+                                                                        trust_remote_code=True)
         self.device = device
         self.batch_size = batch_size
         self.model.eval()
