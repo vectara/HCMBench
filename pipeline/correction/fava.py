@@ -35,7 +35,8 @@ class FAVA(CorrectionModel):
         )
 
     def process_one(self, sample: dict, debug=False) -> CorrectionOutput:
-        prompts = [FAVA_PROMPT.format(evidence=sample["context"], output=sample["claim"])]
+        prompts = [FAVA_PROMPT.format(evidence=sample[self.context_column], 
+                                      output=sample[self.claim_column])]
         outputs = self.model.generate(prompts, self.sampling_params, use_tqdm=False)
         if debug:
             print(outputs[0].outputs[0].text)

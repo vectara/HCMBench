@@ -1,39 +1,32 @@
-# Correction Section
-run_correction: True
-correction_model: IdenticalCorrectionModel
-correction_model_args: 
-  model_name: Identical
-
+output_path: output/Identical/
 # Dataset Section
 eval_datasets:
-  # - RAGTruth
-  # - FAVA
-  # - FaithBench
-  - FACTSGrounding
+  - RAGTruth
+  - FaithBench
 
-# Response Preprocessing section
-run_preprocess: True
-preprocessors:
-  - Sentencizer:
-      decontext: False
-      input_column: corrected
-      output_column: processed
-
-# Evaluation Section
-# Add metrics as:
-# - METRIC_CLASS1:
-# - METRIC_CLASS2:
-#     METRIC2_KWARGS (Optional)
-run_eval: True
-eval_metrics:
-  - HHEM:
-      model_name: HHEM#2.1-sent
-      model_path: vectara/HHEM-2.1
-      claim_column: processed
-  - Minicheck:
-      model_name: Minicheck#7B-sent
-      claim_column: processed
+# Eval Pipeline
+pipeline:
+  - IdenticalCorrectionModel:
+      model_name: Identical
+  - ClaimExtractor:
+      model: meta-llama/llama-3.3-70b-instruct
+      output_column: extracted
+      RPS: 20
+      num_proc: 20
+      api_key_env: OPENROUTER_API_KEY   
   - Rouge:
       model_name: Rouge#L
       context_column: claim
-      
+  - HHEM:
+      model_name: HHEM#Open-claim
+      model_path: vectara/hallucination_evaluation_model
+      claim_column: extracted
+  - Minicheck:
+      model_name: Minicheck#7B-claim
+      claim_column: extracted
+  - FACTSGJudge:
+      model_name: FACTSGJudge#Llama-3.3-70b-json
+      model: meta-llama/llama-3.3-70b-instruct
+      RPS: 20
+      num_proc: 20
+      api_key_env: OPENROUTER_API_KEY
