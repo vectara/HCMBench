@@ -28,7 +28,7 @@ The pipeline runs as:
 
 Note:
 - We use Huggingface's [datasets](https://huggingface.co/docs/datasets/en/index) for the data loading in [bench_data.py](bench_data.py).
-- Each component in the pipeline is a processor (see [processor.py](pipeline/processor.py)) takes a sample of the dataset as input, and store the outputs as new columns in the dataset. 
+- Each component in the pipeline is a processor (see [processor.py](pipeline/processor.py)) that takes a sample of the dataset as input, and store the outputs as new columns in the dataset. 
 - The intermediate/final output is stored as `{output_path}/{data_name}/corrected.jsonl`.
 
 ## Result visualization
