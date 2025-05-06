@@ -9,7 +9,7 @@ eval_datasets:
 # Eval Pipeline
 pipeline:
   - IdenticalCorrectionModel:
-      model_name: Identical
+      model_name: Identity
   - ClaimExtractor:
       model: meta-llama/Llama-3.3-70B-Instruct-Turbo
       base_url: https://api.together.xyz/v1/
