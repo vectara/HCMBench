@@ -1,0 +1,15 @@
+openai
+pydantic
+scikit-learn
+matplotlib
+pandas
+numpy
+spacy
+evaluate
+rouge-score
+beautifulsoup4
+transformers
+accelerate
+datasets
+peft
+minicheck[llm] @ git+https://github.com/Liyan06/MiniCheck.git@main

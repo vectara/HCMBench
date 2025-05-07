@@ -1,19 +1,22 @@
-output_path: output/Identical/
+output_path: output/Identity/
 # Dataset Section
 eval_datasets:
   - RAGTruth
   - FaithBench
+  # - FAVA
+  # - FACTSGrounding
 
 # Eval Pipeline
 pipeline:
   - IdenticalCorrectionModel:
-      model_name: Identical
+      model_name: Identity
   - ClaimExtractor:
-      model: meta-llama/llama-3.3-70b-instruct
+      model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+      base_url: https://api.together.xyz/v1/
       output_column: extracted
       RPS: 20
       num_proc: 20
-      api_key_env: OPENROUTER_API_KEY   
+      api_key_env: TOGETHER_API_KEY   
   - Rouge:
       model_name: Rouge#L
       context_column: claim
@@ -26,7 +29,8 @@ pipeline:
       claim_column: extracted
   - FACTSGJudge:
       model_name: FACTSGJudge#Llama-3.3-70b-json
-      model: meta-llama/llama-3.3-70b-instruct
+      model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+      base_url: https://api.together.xyz/v1/
       RPS: 20
       num_proc: 20
-      api_key_env: OPENROUTER_API_KEY
+      api_key_env: TOGETHER_API_KEY
