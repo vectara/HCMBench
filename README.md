@@ -4,6 +4,11 @@ Hallucination correction model benchmark
 This repository provides a comprehensive benchmark for evaluating and comparing hallucination correction models. 
 We offer tools and datasets to assess how effectively these models can mitigate factual inaccuracies in language generation.
 
+## Install
+```bash
+pip install -r requirements.txt
+```
+
 ## Download the dataset
 - Download RAGTruth and FaithBench using the scripts below
 ```bash

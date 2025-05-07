@@ -25,8 +25,8 @@ def get_LLM_response(base_url, model, messages, api_key_env, extra_body=None, **
 
 class OAICaller:
     """ Wrapper for a OpenAI compatible LLM call. """
-    def __init__(self, model, max_tokens=2000, 
-                 base_url="https://api.openai.com/v1", 
+    def __init__(self, model, max_tokens=2000,
+                 base_url="https://api.openai.com/v1",
                  api_key_env="OPENAI_API_KEY",
                  extra_body=None,
                  **kwargs):
